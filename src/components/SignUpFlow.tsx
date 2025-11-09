@@ -7,7 +7,7 @@ interface SignUpFlowProps {
 }
 
 export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
-  const { updateIncomeSettings, updateInvestmentSettings, updatePlanningSettings, addExpenseCategory } = useFinancial();
+  const { updateIncomeSettings, updateInvestmentSettings, updatePlanningSettings, addExpenseCategory, addRSUGrant } = useFinancial();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     baseSalary: '',
@@ -23,6 +23,9 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
     rent: '',
     food: '',
     utilities: '',
+    rsuGrantYear: new Date().getFullYear().toString(),
+    rsuGrantValue: '',
+    rsuGrantType: 'Main' as 'Main' | 'Refresher' | 'Promo' | 'Retention',
     startYear: new Date().getFullYear(),
     projectionYears: 6
   });
@@ -32,7 +35,7 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
   };
 
   const handleNext = () => {
-    if (step < 4) {
+    if (step < 5) {
       setStep(step + 1);
     } else {
       handleComplete();
@@ -84,6 +87,26 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
       });
     }
 
+    // Add RSU grant if provided
+    if (formData.rsuGrantValue && formData.currentStockPrice) {
+      const grantYear = parseInt(formData.rsuGrantYear) || new Date().getFullYear();
+      const grantValue = parseFloat(formData.rsuGrantValue) || 0;
+      const sharePrice = parseFloat(formData.currentStockPrice) || 0;
+      
+      if (grantValue > 0 && sharePrice > 0) {
+        addRSUGrant({
+          id: `grant-${grantYear}-${formData.rsuGrantType.toLowerCase()}`,
+          grantYear,
+          grantType: formData.rsuGrantType,
+          grantValueEur: grantValue,
+          sharePriceEur: sharePrice,
+          grantShares: grantValue / sharePrice,
+          vestingYears: 4,
+          vestingPercentagePerYear: 0.25
+        });
+      }
+    }
+
     updatePlanningSettings({
       startYear: formData.startYear,
       projectionYears: formData.projectionYears
@@ -101,6 +124,8 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
       case 3:
         return formData.rent !== '' || formData.food !== '';
       case 4:
+        return true; // RSU grants are optional
+      case 5:
         return true;
       default:
         return false;
@@ -113,14 +138,14 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
         {/* Progress Indicator */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            {[1, 2, 3, 4].map((s) => (
+            {[1, 2, 3, 4, 5].map((s) => (
               <div key={s} className="flex items-center flex-1">
                 <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
                   step >= s ? 'bg-primary border-primary text-primary-foreground' : 'border-border text-muted-foreground'
                 }`}>
                   {step > s ? '✓' : s}
                 </div>
-                {s < 4 && (
+                {s < 5 && (
                   <div className={`flex-1 h-1 mx-2 ${
                     step > s ? 'bg-primary' : 'bg-border'
                   }`} />
@@ -132,6 +157,7 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
             <span>Income</span>
             <span>Investments</span>
             <span>Expenses</span>
+            <span>RSU Grants</span>
             <span>Review</span>
           </div>
         </div>
@@ -368,6 +394,65 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
           {step === 4 && (
             <div className="space-y-6">
               <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <Award className="w-8 h-8 text-primary" />
+                </div>
+                <h2 className="text-2xl font-bold mb-2">RSU Grants</h2>
+                <p className="text-muted-foreground">Add your stock grant (optional - you can add more later)</p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Grant Year</label>
+                  <input
+                    type="number"
+                    value={formData.rsuGrantYear}
+                    onChange={(e) => handleInputChange('rsuGrantYear', e.target.value)}
+                    placeholder={new Date().getFullYear().toString()}
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Grant Type</label>
+                  <select
+                    value={formData.rsuGrantType}
+                    onChange={(e) => handleInputChange('rsuGrantType', e.target.value)}
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="Main">Main Grant</option>
+                    <option value="Refresher">Refresher</option>
+                    <option value="Promo">Promotion</option>
+                    <option value="Retention">Retention</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Grant Value (€)</label>
+                  <input
+                    type="number"
+                    value={formData.rsuGrantValue}
+                    onChange={(e) => handleInputChange('rsuGrantValue', e.target.value)}
+                    placeholder="e.g., 50000"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Total value of the grant</p>
+                </div>
+
+                {!formData.currentStockPrice && (
+                  <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg">
+                    <p className="text-sm text-warning-foreground">
+                      ⚠️ Stock price is required. Please go back to Investments step to set it.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {step === 5 && (
+            <div className="space-y-6">
+              <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 mb-4">
                   <Award className="w-8 h-8 text-success" />
                 </div>
@@ -462,6 +547,25 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
                     )}
                   </>
                 )}
+                {formData.rsuGrantValue && (
+                  <>
+                    <div className="pt-2 border-t border-border/50">
+                      <p className="text-sm font-semibold text-foreground mb-3">RSU Grant</p>
+                    </div>
+                    <div className="flex justify-between py-2">
+                      <span className="text-muted-foreground">Grant Type</span>
+                      <span className="font-semibold">{formData.rsuGrantType}</span>
+                    </div>
+                    <div className="flex justify-between py-2">
+                      <span className="text-muted-foreground">Grant Year</span>
+                      <span className="font-semibold">{formData.rsuGrantYear}</span>
+                    </div>
+                    <div className="flex justify-between py-2">
+                      <span className="text-muted-foreground">Grant Value</span>
+                      <span className="font-semibold">€{parseFloat(formData.rsuGrantValue || '0').toLocaleString()}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -482,8 +586,8 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
               disabled={!canProceed()}
               className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {step === 4 ? 'Get Started' : 'Next'}
-              {step < 4 && <ArrowRight className="w-4 h-4" />}
+              {step === 5 ? 'Get Started' : 'Next'}
+              {step < 5 && <ArrowRight className="w-4 h-4" />}
             </button>
           </div>
         </div>

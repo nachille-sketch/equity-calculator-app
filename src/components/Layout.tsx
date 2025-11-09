@@ -30,7 +30,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
   return (
     <div className="min-h-screen bg-background transition-colors duration-200">
       {/* Header - Crisp Style with backdrop blur */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-xl sticky top-0 z-10">
+      <header className="border-b border-border/50 bg-card/95 backdrop-blur-xl sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
             <div>
@@ -91,7 +91,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
       </header>
 
       {/* Navigation Tabs - Crisp Style */}
-      <nav className="border-b border-border/50 bg-card/30 sticky top-[73px] z-10 backdrop-blur-sm">
+      <nav className="border-b border-border/50 bg-card/90 sticky top-[73px] z-10 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex space-x-1 overflow-x-auto">
             {tabs.map((tab) => (

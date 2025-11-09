@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useFinancial } from '../context/FinancialContext';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid, Line, Legend } from 'recharts';
 import type { RSUGrant } from '../types/financial';
-import { TrendingUp, DollarSign, PiggyBank, Target, Award } from 'lucide-react';
+import { TrendingUp, DollarSign, PiggyBank, Target, Award, Settings, ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
 
 interface FinancialOverviewPageProps {
   initialView?: 'financials' | 'rsus' | 'investments';
 }
 
 export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ initialView = 'financials' }) => {
-  const { data, projections, updateInvestmentSettings, updateRSUGrants } = useFinancial();
+  const { data, projections, updateInvestmentSettings, updateRSUGrants, updateIncomeSettings, addExpenseCategory, updateExpenseCategory, removeExpenseCategory } = useFinancial();
   const [activeView, setActiveView] = useState<'financials' | 'rsus' | 'investments'>(initialView);
   const [expandedInvestmentYear, setExpandedInvestmentYear] = useState<number | null>(null);
   const [expandedYear, setExpandedYear] = useState<number | null>(null);
@@ -18,6 +18,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
   const [showRSUAssumptions, setShowRSUAssumptions] = useState(false);
   const [showGrantManagement, setShowGrantManagement] = useState(false);
   const [newGrantType, setNewGrantType] = useState<'Main' | 'Refresher' | 'Promo' | 'Retention'>('Refresher');
+  const [showIncomeExpenseManagement, setShowIncomeExpenseManagement] = useState(false);
   
   // Auto-expand grant management when there are no grants
   useEffect(() => {
@@ -297,6 +298,116 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                 />
               </AreaChart>
             </ResponsiveContainer>
+          </section>
+
+          {/* Income & Expenses Management Toggle */}
+          <section className="bg-white rounded-xl border border-border/20 shadow-sm">
+            <button
+              onClick={() => setShowIncomeExpenseManagement(!showIncomeExpenseManagement)}
+              className="w-full px-6 py-4 flex items-center justify-between hover:bg-secondary/5 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Settings className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold">Manage Income & Expenses</h3>
+                  <p className="text-xs text-muted-foreground">Adjust your salary, bonuses, and monthly expenses</p>
+                </div>
+              </div>
+              {showIncomeExpenseManagement ? (
+                <ChevronUp className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-muted-foreground" />
+              )}
+            </button>
+
+            {showIncomeExpenseManagement && (
+              <div className="px-6 pb-6 border-t border-border/50 pt-6 space-y-6">
+                {/* Income Settings */}
+                <div>
+                  <h4 className="text-sm font-semibold mb-4">Income Settings</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium mb-2">Base Salary (€/year)</label>
+                      <input
+                        type="number"
+                        value={data.incomeSettings.baseSalary}
+                        onChange={(e) => updateIncomeSettings({ baseSalary: parseFloat(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-2">Bonus (%)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={(data.incomeSettings.bonusPercentage * 100).toFixed(1)}
+                        onChange={(e) => updateIncomeSettings({ bonusPercentage: (parseFloat(e.target.value) || 0) / 100 })}
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-2">Holiday Allowance (%)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={(data.incomeSettings.holidayAllowancePercentage * 100).toFixed(1)}
+                        onChange={(e) => updateIncomeSettings({ holidayAllowancePercentage: (parseFloat(e.target.value) || 0) / 100 })}
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-2">Healthcare Benefit (€/month)</label>
+                      <input
+                        type="number"
+                        value={data.incomeSettings.healthcareBenefitMonthly}
+                        onChange={(e) => updateIncomeSettings({ healthcareBenefitMonthly: parseFloat(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expenses */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-sm font-semibold">Monthly Expenses</h4>
+                  </div>
+                  <div className="space-y-2">
+                    {data.expenseCategories.map((expense) => (
+                      <div key={expense.id} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={expense.name}
+                          onChange={(e) => updateExpenseCategory(expense.id, { name: e.target.value })}
+                          className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                        <input
+                          type="number"
+                          value={expense.monthlyAmount}
+                          onChange={(e) => updateExpenseCategory(expense.id, { monthlyAmount: parseFloat(e.target.value) || 0 })}
+                          className="w-32 px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                        <button
+                          onClick={() => removeExpenseCategory(expense.id)}
+                          className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => addExpenseCategory({ id: `expense-${Date.now()}`, name: 'New Expense', monthlyAmount: 0 })}
+                      className="w-full px-4 py-2 border-2 border-dashed border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Expense
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
 
           {/* Yearly Financials Table with Sparklines */}
@@ -1389,28 +1500,14 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                                 <div className="p-4 bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-lg border border-destructive/20">
                                   <h5 className="font-semibold text-sm mb-3">Tax Impact Summary</h5>
                                   
-                                  {/* Horizontal Flow */}
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <div className="flex-1 text-center p-2.5 bg-card rounded border border-border/50">
-                                      <p className="text-xs text-muted-foreground mb-0.5">Gross</p>
-                                      <p className="text-base font-bold">{formatCurrency(rsu.grossRSUValue)}</p>
-                                    </div>
-                                    <div className="text-lg text-muted-foreground">→</div>
-                                    <div className="flex-1 text-center p-2.5 bg-destructive/10 rounded border border-destructive/30">
-                                      <p className="text-xs text-muted-foreground mb-0.5">Tax</p>
-                                      <p className="text-base font-bold text-destructive">-{formatCurrency(rsu.taxPaid)}</p>
-                                    </div>
-                                    <div className="text-lg text-muted-foreground">=</div>
-                                    <div className="flex-1 text-center p-2.5 bg-success/10 rounded border border-success/30">
-                                      <p className="text-xs text-muted-foreground mb-0.5">Net</p>
-                                      <p className="text-base font-bold text-success">{formatCurrency(rsu.netRSUValue)}</p>
-                                    </div>
-                                  </div>
-
                                   {/* Compact Tax Rate Bar */}
                                   <div className="space-y-1.5">
-                                    <div className="flex justify-between text-xs">
-                                      <span className="text-muted-foreground">Effective Tax Rate: {formatPercentage(effectiveTaxRate)}</span>
+                                    <div className="flex justify-between text-xs mb-2">
+                                      <span className="text-muted-foreground">Gross Value: {formatCurrency(rsu.grossRSUValue)}</span>
+                                      <span className="text-muted-foreground">Net Value: {formatCurrency(rsu.netRSUValue)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs mb-2">
+                                      <span className="text-destructive">Tax Paid: -{formatCurrency(rsu.taxPaid)}</span>
                                       {data.incomeSettings.has30PercentRuling && <span className="text-xs text-success">✓ 30% ruling</span>}
                                     </div>
                                     <div className="relative h-2 bg-secondary/30 rounded-full overflow-hidden">
@@ -1418,6 +1515,9 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                                         className="absolute h-full bg-destructive transition-all duration-500"
                                         style={{ width: `${effectiveTaxRate * 100}%` }}
                                       />
+                                    </div>
+                                    <div className="text-xs text-center text-muted-foreground mt-1">
+                                      Effective Tax Rate: {formatPercentage(effectiveTaxRate)}
                                     </div>
                                   </div>
                                 </div>
