@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useFinancial } from '../context/FinancialContext';
-import { TrendingUp, DollarSign, Award, ArrowRight, Receipt } from 'lucide-react';
+import { TrendingUp, DollarSign, Award, ArrowRight, Receipt, Shield } from 'lucide-react';
 
 interface SignUpFlowProps {
   onComplete: () => void;
@@ -149,6 +149,19 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
+        {/* Privacy Notice - Prominent */}
+        <div className="mb-6 p-4 bg-primary/10 border-2 border-primary/30 rounded-xl flex items-start gap-3">
+          <div className="p-2 bg-primary/20 rounded-lg shrink-0">
+            <Shield className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-foreground mb-1">Your Data Stays Private</p>
+            <p className="text-xs text-muted-foreground">
+              All your financial data is stored <strong>locally in your browser only</strong>. We never send, store, or have access to your information. Your privacy is protected.
+            </p>
+          </div>
+        </div>
+
         {/* Progress Indicator */}
         <div className="mb-8">
           <div className="relative flex items-start">
@@ -660,9 +673,12 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
           </div>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          All data is stored locally in your browser
-        </p>
+        <div className="mt-6 p-3 bg-muted/30 border border-border/50 rounded-lg">
+          <p className="text-center text-xs text-muted-foreground">
+            <Shield className="w-3 h-3 inline mr-1.5" />
+            <strong>Privacy First:</strong> All data stays in your browser. Nothing is sent to any server.
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -16,7 +16,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
 
   const tabs = [
     { id: 'dashboard', name: 'Financial Overview' },
-    { id: 'financial-overview', name: 'Detailed Breakdown' }
+    { id: 'financials', name: 'Yearly Financials' },
+    { id: 'rsus', name: 'RSUs' },
+    { id: 'investments', name: 'Investments & Pension' }
   ];
 
   const handleExportJSON = () => {

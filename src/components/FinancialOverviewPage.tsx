@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useFinancial } from '../context/FinancialContext';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid, Line, Legend } from 'recharts';
 import type { RSUGrant } from '../types/financial';
-import { TrendingUp, DollarSign, PiggyBank, Target, Award, Settings, ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
+import { TrendingUp, PiggyBank, Award, Settings, ChevronDown, ChevronUp, Plus, X, Wallet } from 'lucide-react';
 
 interface FinancialOverviewPageProps {
   initialView?: 'financials' | 'rsus' | 'investments';
 }
 
 export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ initialView = 'financials' }) => {
-  const { data, projections, updateInvestmentSettings, updateRSUGrants, updateIncomeSettings, addExpenseCategory, updateExpenseCategory, removeExpenseCategory } = useFinancial();
-  const [activeView, setActiveView] = useState<'financials' | 'rsus' | 'investments'>(initialView);
+  const { data, projections, updateInvestmentSettings, updateRSUGrants, updateIncomeSettings, updatePlanningSettings, addExpenseCategory, updateExpenseCategory, removeExpenseCategory } = useFinancial();
   const [expandedInvestmentYear, setExpandedInvestmentYear] = useState<number | null>(null);
   const [expandedYear, setExpandedYear] = useState<number | null>(null);
   const [expandedBreakdowns, setExpandedBreakdowns] = useState<Record<number, { investments?: boolean; pension?: boolean }>>({});
@@ -18,13 +17,14 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
   const [showGrantManagement, setShowGrantManagement] = useState(false);
   const [newGrantType, setNewGrantType] = useState<'Main' | 'Refresher' | 'Promo' | 'Retention'>('Refresher');
   const [showIncomeExpenseManagement, setShowIncomeExpenseManagement] = useState(false);
+  const [showInvestmentManagement, setShowInvestmentManagement] = useState(false);
   
   // Auto-expand grant management when there are no grants
   useEffect(() => {
-    if (data.rsuGrants.length === 0 && activeView === 'rsus') {
+    if (data.rsuGrants.length === 0 && initialView === 'rsus') {
       setShowGrantManagement(true);
     }
-  }, [data.rsuGrants.length, activeView]);
+  }, [data.rsuGrants.length, initialView]);
   
   // Auto-calculate suggested year based on existing grants
   const getNextGrantYear = (grantType: string) => {
@@ -65,10 +65,6 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
   
   const [newGrantYear, setNewGrantYear] = useState(getNextGrantYear('Refresher'));
 
-  useEffect(() => {
-    setActiveView(initialView);
-  }, [initialView]);
-
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -86,127 +82,17 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
   };
 
   const formatPercentage = (value: number) => {
-    return `${(value * 100).toFixed(1)}%`;
+    return `${Math.round(value * 100)}%`;
   };
 
   // Calculate key metrics
   const finalInvestmentBalance = projections.yearlyInvestments[projections.yearlyInvestments.length - 1]?.closingBalance || 0;
   const finalPensionBalance = projections.yearlyPension[projections.yearlyPension.length - 1]?.closingBalance || 0;
-  const totalWealth = finalInvestmentBalance + finalPensionBalance;
-  
-  // TODAY's wealth (most important!) - with safe defaults
-  const currentNetWorth = data.investmentSettings.startingNetWorth || 0;
-  const currentPension = data.investmentSettings.startingPensionBalance || 0;
-  const todaysWealth = currentNetWorth + currentPension;
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Hero Section - Today's Wealth (Clean, Professional) */}
-      <section className="relative p-12 bg-white border border-border/30 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
-        {/* Subtle gradient accent */}
-        <div className="absolute inset-0 bg-gradient-to-br from-success/3 via-transparent to-primary/3 pointer-events-none" />
-        
-        <div className="relative z-10">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-success/10 rounded-lg">
-                <Target className="w-5 h-5 text-success" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Your Total Wealth</p>
-                <p className="text-xs text-muted-foreground">Current assets & investments</p>
-              </div>
-            </div>
-            
-            {/* Projection Badge */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10">
-              <TrendingUp className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">
-                {formatCurrency(totalWealth)} in {data.planningSettings.projectionYears}y
-              </span>
-            </div>
-          </div>
-          
-          {/* Main Amount */}
-          <div className="mb-6">
-            <h2 className="text-6xl font-bold tracking-tight text-foreground mb-2">
-              {formatCurrency(todaysWealth)}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Available today across all accounts
-            </p>
-          </div>
-          
-          {/* Key Metrics Grid - Clean & Simple */}
-          <div className="grid grid-cols-3 gap-4 pt-6 border-t border-border/30">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 bg-primary/10 rounded">
-                  <DollarSign className="w-3.5 h-3.5 text-primary" />
-                </div>
-                <p className="text-xs text-muted-foreground">Liquid Assets</p>
-              </div>
-              <p className="text-lg font-semibold text-foreground">{formatCurrency(currentNetWorth)}</p>
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 bg-accent/30 rounded">
-                  <PiggyBank className="w-3.5 h-3.5 text-muted-foreground" />
-                </div>
-                <p className="text-xs text-muted-foreground">Pension Fund</p>
-              </div>
-              <p className="text-lg font-semibold text-foreground">{formatCurrency(currentPension)}</p>
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 bg-success/10 rounded">
-                  <TrendingUp className="w-3.5 h-3.5 text-success" />
-                </div>
-                <p className="text-xs text-muted-foreground">Expected Growth</p>
-              </div>
-              <p className="text-lg font-semibold text-success">{formatCurrency(totalWealth - todaysWealth)}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Tab Navigation */}
-      <div className="flex gap-2 border-b border-border/50 pb-2">
-        <button
-          onClick={() => setActiveView('financials')}
-          className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-            activeView === 'financials'
-              ? 'bg-card border border-border/50 border-b-transparent text-foreground'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          Yearly Financials
-        </button>
-        <button
-          onClick={() => setActiveView('rsus')}
-          className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-            activeView === 'rsus'
-              ? 'bg-card border border-border/50 border-b-transparent text-foreground'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          RSUs
-        </button>
-        <button
-          onClick={() => setActiveView('investments')}
-          className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-            activeView === 'investments'
-              ? 'bg-card border border-border/50 border-b-transparent text-foreground'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          Investments & Pension
-        </button>
-      </div>
-
       {/* Financials Tab */}
-      {activeView === 'financials' && (
+      {initialView === 'financials' && (
         <div className="space-y-6">
           {/* Income & Savings Visualization - Enhanced Multi-Line */}
           <section className="bg-white rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -364,6 +250,55 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                         onChange={(e) => updateIncomeSettings({ healthcareBenefitMonthly: parseFloat(e.target.value) || 0 })}
                         className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                       />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Assumptions */}
+                <div className="pt-4 border-t border-border/50">
+                  <h4 className="text-sm font-semibold mb-4">Assumptions</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium mb-2">
+                        Salary Growth Rate ({Math.round(data.incomeSettings.salaryGrowthRate * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="15"
+                        step="0.5"
+                        value={data.incomeSettings.salaryGrowthRate * 100}
+                        onChange={(e) => updateIncomeSettings({ salaryGrowthRate: parseFloat(e.target.value) / 100 })}
+                        className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${(data.incomeSettings.salaryGrowthRate * 100) / 15 * 100}%, hsl(var(--secondary)) ${(data.incomeSettings.salaryGrowthRate * 100) / 15 * 100}%, hsl(var(--secondary)) 100%)`
+                        }}
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <span>0%</span>
+                        <span>15%</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-2">
+                        Expense Inflation Rate ({Math.round(data.planningSettings.expenseInflationRate * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="0.5"
+                        value={data.planningSettings.expenseInflationRate * 100}
+                        onChange={(e) => updatePlanningSettings({ expenseInflationRate: parseFloat(e.target.value) / 100 })}
+                        className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${(data.planningSettings.expenseInflationRate * 100) / 10 * 100}%, hsl(var(--secondary)) ${(data.planningSettings.expenseInflationRate * 100) / 10 * 100}%, hsl(var(--secondary)) 100%)`
+                        }}
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <span>0%</span>
+                        <span>10%</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -715,7 +650,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
       )}
 
       {/* RSUs Tab */}
-      {activeView === 'rsus' && (
+      {initialView === 'rsus' && (
         <div className="space-y-8">
           {/* Vesting Schedule Visualization - Enhanced */}
           <section className="bg-white rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -725,7 +660,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
               </div>
               <div>
                 <h3 className="text-lg font-semibold">Vesting Schedule Overview</h3>
-                <p className="text-xs text-muted-foreground">Cumulative vesting trends by grant over time</p>
+                <p className="text-xs text-muted-foreground">Yearly vesting amounts by grant over time</p>
               </div>
             </div>
             {(() => {
@@ -762,40 +697,41 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                 );
               }
 
-              // Assign colors using new palette
+              // Assign colors using darker, more saturated palette
               const colors = [
-                'hsl(var(--primary))',              // Main grant - primary blue
-                'hsl(var(--secondary))',            // First refresher - light blue
-                'hsl(var(--accent))',               // Second refresher - very light blue
-                'hsl(var(--primary) / 0.7)',        // Third refresher
-                'hsl(var(--secondary) / 0.7)',      // Fourth refresher
-                'hsl(var(--muted))',                // Fifth refresher - muted purple
-                'hsl(var(--muted) / 0.7)',          // Sixth refresher
-                'hsl(var(--muted) / 0.5)'           // Seventh refresher
+                'hsl(var(--primary))',                    // Main grant - primary blue
+                'hsl(230, 70%, 50%)',                    // First refresher - medium blue
+                'hsl(230, 60%, 45%)',                    // Second refresher - darker blue
+                'hsl(var(--primary) / 0.85)',             // Third refresher
+                'hsl(230, 65%, 55%)',                    // Fourth refresher - medium-dark blue
+                'hsl(var(--muted))',                     // Fifth refresher - muted purple
+                'hsl(230, 55%, 40%)',                    // Sixth refresher - dark blue
+                'hsl(230, 50%, 35%)'                     // Seventh refresher - darker blue
               ];
 
-              // Build chart data - cumulative vesting value per grant over time
+              // Build chart data - yearly vesting value per grant (for stacking)
               const chartData = allYears.map(year => {
                 const dataPoint: any = { year };
                 
+                // Calculate yearly vesting amount for each grant
                 data.rsuGrants.forEach((grant) => {
                   const grantKey = `${grant.grantType}_${grant.grantYear}`;
                   
-                  // Calculate cumulative vested value up to this year
-                  let cumulativeValue = 0;
-                  for (let y = grant.grantYear; y <= year; y++) {
-                    const yearsFromGrant = y - grant.grantYear;
-                    if (yearsFromGrant >= 0 && yearsFromGrant < grant.vestingYears) {
-                      const sharesVesting = grant.grantShares * grant.vestingPercentagePerYear;
-                      // Get the stock price for year y
-                      const priceGrowthYears = y - startYear;
-                      const stockPrice = data.investmentSettings.currentStockPrice * Math.pow(1 + data.investmentSettings.sharePriceGrowthRate, priceGrowthYears);
-                      const yearValue = sharesVesting * stockPrice;
-                      cumulativeValue += yearValue;
-                    }
+                  // Calculate how much vests in this specific year
+                  const yearsFromGrant = year - grant.grantYear;
+                  let yearlyValue = 0;
+                  
+                  if (yearsFromGrant >= 0 && yearsFromGrant < grant.vestingYears) {
+                    // This grant vests in this year
+                    const sharesVesting = grant.grantShares * grant.vestingPercentagePerYear;
+                    // Get the stock price for this year
+                    const priceGrowthYears = year - startYear;
+                    const stockPrice = data.investmentSettings.currentStockPrice * Math.pow(1 + data.investmentSettings.sharePriceGrowthRate, priceGrowthYears);
+                    yearlyValue = sharesVesting * stockPrice;
                   }
                   
-                  dataPoint[grantKey] = cumulativeValue;
+                  // Store yearly vesting value (Recharts will stack automatically with stackId)
+                  dataPoint[grantKey] = yearlyValue;
                 });
                 
                 return dataPoint;
@@ -851,8 +787,8 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                           x2="0" 
                           y2="1"
                         >
-                          <stop offset="0%" stopColor={colors[idx % colors.length]} stopOpacity={0.4}/>
-                          <stop offset="100%" stopColor={colors[idx % colors.length]} stopOpacity={0.08}/>
+                          <stop offset="0%" stopColor={colors[idx % colors.length]} stopOpacity={0.6}/>
+                          <stop offset="100%" stopColor={colors[idx % colors.length]} stopOpacity={0.15}/>
                         </linearGradient>
                       ))}
                     </defs>
@@ -885,12 +821,13 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                           type="monotone"
                           dataKey={grantKey}
                           name={`${grant.grantType} ${grant.grantYear}`}
+                          stackId="1"
                           stroke={colors[idx % colors.length]}
-                          strokeWidth={3}
+                          strokeWidth={2.5}
                           fill={`url(#grantGradient${idx})`}
                           fillOpacity={1}
-                          dot={{ r: 5, strokeWidth: 2, stroke: colors[idx % colors.length], fill: 'white' }}
-                          activeDot={{ r: 7, strokeWidth: 3 }}
+                          dot={false}
+                          activeDot={{ r: 6, strokeWidth: 2 }}
                         />
                       );
                     })}
@@ -1277,7 +1214,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                       • <strong>Promotions:</strong> 60% more than your current refreshers<br/>
                       • <strong>Refreshers (after promo):</strong> 60% more than your old refreshers (same as the promo multiplier!)<br/>
                       • <strong>Hover over buttons</strong> to see the calculation<br/>
-                      • Grant price is auto-calculated based on year and {(data.investmentSettings.sharePriceGrowthRate * 100).toFixed(1)}% growth rate
+                      • Grant price is auto-calculated based on year and {Math.round(data.investmentSettings.sharePriceGrowthRate * 100)}% growth rate
                     </p>
                   </div>
                 </div>
@@ -1285,7 +1222,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                 {/* RSU Assumptions */}
                 <div className="pt-6 border-t border-border/50">
                   <h4 className="text-sm font-semibold text-foreground mb-4">RSU Assumptions</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
                     {/* Current Stock Price */}
                     <div>
                       <div className="flex items-center justify-between mb-2">
@@ -1314,7 +1251,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <label className="text-sm font-medium">Share Price Growth Rate</label>
-                        <span className="text-sm font-semibold">{(data.investmentSettings.sharePriceGrowthRate * 100).toFixed(1)}%</span>
+                        <span className="text-sm font-semibold">{Math.round(data.investmentSettings.sharePriceGrowthRate * 100)}%</span>
                       </div>
                       <input
                         type="range"
@@ -1533,7 +1470,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
       )}
 
       {/* Investments Tab */}
-      {activeView === 'investments' && (
+      {initialView === 'investments' && (
         <div className="space-y-8">
           {/* Wealth Growth Visualization - Enhanced */}
           <section className="bg-white rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -1646,6 +1583,100 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                 />
               </AreaChart>
             </ResponsiveContainer>
+          </section>
+
+          {/* Manage Investments - Unified Panel */}
+          <section className="bg-white rounded-xl border border-border/20 shadow-sm">
+            <button
+              onClick={() => setShowInvestmentManagement(!showInvestmentManagement)}
+              className="w-full px-6 py-4 flex items-center justify-between hover:bg-secondary/5 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Wallet className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold">Manage Investments</h3>
+                  <p className="text-xs text-muted-foreground">Adjust investment settings and assumptions</p>
+                </div>
+              </div>
+              {showInvestmentManagement ? (
+                <ChevronUp className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-muted-foreground" />
+              )}
+            </button>
+
+            {showInvestmentManagement && (
+              <div className="px-6 pb-6 border-t border-border/50 pt-6 space-y-6">
+                {/* Investment Settings */}
+                <div>
+                  <h4 className="text-sm font-semibold mb-4">Investment Settings</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Starting Net Worth */}
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1.5">Starting Net Worth (€)</label>
+                      <input
+                        type="number"
+                        value={data.investmentSettings.startingNetWorth}
+                        onChange={(e) => updateInvestmentSettings({ startingNetWorth: parseFloat(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
+                      />
+                    </div>
+
+                    {/* Starting Pension Balance */}
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1.5">Starting Pension Balance (€)</label>
+                      <input
+                        type="number"
+                        value={data.investmentSettings.startingPensionBalance}
+                        onChange={(e) => updateInvestmentSettings({ startingPensionBalance: parseFloat(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
+                      />
+                    </div>
+
+                    {/* Annual Return Rate */}
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1.5">
+                        Annual Return Rate ({Math.round(data.investmentSettings.annualReturnRate * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="0.20"
+                        step="0.001"
+                        value={data.investmentSettings.annualReturnRate}
+                        onChange={(e) => updateInvestmentSettings({ annualReturnRate: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${(data.investmentSettings.annualReturnRate / 0.20) * 100}%, hsl(var(--secondary)) ${(data.investmentSettings.annualReturnRate / 0.20) * 100}%, hsl(var(--secondary)) 100%)`
+                        }}
+                      />
+                    </div>
+
+                    {/* Pension Return Rate */}
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1.5">
+                        Pension Return Rate ({Math.round(data.investmentSettings.pensionReturnRate * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="0.15"
+                        step="0.001"
+                        value={data.investmentSettings.pensionReturnRate}
+                        onChange={(e) => updateInvestmentSettings({ pensionReturnRate: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${(data.investmentSettings.pensionReturnRate / 0.15) * 100}%, hsl(var(--secondary)) ${(data.investmentSettings.pensionReturnRate / 0.15) * 100}%, hsl(var(--secondary)) 100%)`
+                        }}
+                      />
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
 
           {/* Investment Stats */}

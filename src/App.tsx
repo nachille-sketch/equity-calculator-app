@@ -12,7 +12,6 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [previousTab, setPreviousTab] = useState('dashboard');
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [financialOverviewView, setFinancialOverviewView] = useState<'financials' | 'rsus' | 'investments'>('financials');
 
   // Check if user needs to complete sign-up
   useEffect(() => {
@@ -27,13 +26,9 @@ function AppContent() {
   };
 
   // Tab order for determining slide direction
-  const tabOrder = ['dashboard', 'financial-overview', 'inputs'];
+  const tabOrder = ['dashboard', 'financials', 'rsus', 'investments', 'inputs'];
 
-  // Reset to default view when navigating away from financial-overview
   const handleTabChange = (tab: string) => {
-    if (tab !== 'financial-overview') {
-      setFinancialOverviewView('financials');
-    }
     setPreviousTab(activeTab);
     setIsTransitioning(true);
     setActiveTab(tab);
@@ -68,8 +63,12 @@ function AppContent() {
       switch (activeTab) {
         case 'dashboard':
           return <Dashboard />;
-        case 'financial-overview':
-          return <FinancialOverviewPage initialView={financialOverviewView} />;
+        case 'financials':
+          return <FinancialOverviewPage initialView="financials" />;
+        case 'rsus':
+          return <FinancialOverviewPage initialView="rsus" />;
+        case 'investments':
+          return <FinancialOverviewPage initialView="investments" />;
         case 'inputs':
           return <InputsForm />;
         default:
