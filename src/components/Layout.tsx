@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { exportToJSON, exportToCSV } from '../utils/exportData';
 import { useFinancial } from '../context/FinancialContext';
 
@@ -11,6 +11,8 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange }) => {
   const { data, projections } = useFinancial();
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(89);
 
   const tabs = [
     { id: 'dashboard', name: 'Financial Overview' },
@@ -27,10 +29,22 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
     setShowExportMenu(false);
   };
 
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+
+    updateHeaderHeight();
+    window.addEventListener('resize', updateHeaderHeight);
+    return () => window.removeEventListener('resize', updateHeaderHeight);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background transition-colors duration-200">
       {/* Header - Crisp Style with backdrop blur */}
-      <header className="border-b border-border/50 bg-card/95 backdrop-blur-xl sticky top-0 z-10">
+      <header ref={headerRef} className="border-b border-border/50 bg-card/95 backdrop-blur-xl sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
             <div>
@@ -91,7 +105,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
       </header>
 
       {/* Navigation Tabs - Crisp Style */}
-      <nav className="border-b border-border/50 bg-card/90 sticky top-[73px] z-10 backdrop-blur-sm">
+      <nav className="border-b border-border/50 bg-card/90 sticky z-10 backdrop-blur-sm" style={{ top: `${headerHeight}px` }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex space-x-1 overflow-x-auto">
             {tabs.map((tab) => (
