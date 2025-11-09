@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import { useFinancial } from '../context/FinancialContext';
-import { TrendingUp, DollarSign, Award, ArrowRight } from 'lucide-react';
+import { TrendingUp, DollarSign, Award, ArrowRight, Receipt } from 'lucide-react';
 
 interface SignUpFlowProps {
   onComplete: () => void;
 }
 
 export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
-  const { updateIncomeSettings, updateInvestmentSettings, updatePlanningSettings } = useFinancial();
+  const { updateIncomeSettings, updateInvestmentSettings, updatePlanningSettings, addExpenseCategory } = useFinancial();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     baseSalary: '',
     has30PercentRuling: false,
     startingNetWorth: '',
     currentStockPrice: '',
+    rent: '',
+    food: '',
+    utilities: '',
     startYear: new Date().getFullYear(),
     projectionYears: 6
   });
@@ -23,7 +26,7 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
   };
 
   const handleNext = () => {
-    if (step < 3) {
+    if (step < 4) {
       setStep(step + 1);
     } else {
       handleComplete();
@@ -46,6 +49,29 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
       });
     }
 
+    // Add expense categories
+    if (formData.rent) {
+      addExpenseCategory({
+        id: 'rent',
+        name: 'Rent',
+        monthlyAmount: parseFloat(formData.rent) || 0
+      });
+    }
+    if (formData.food) {
+      addExpenseCategory({
+        id: 'food',
+        name: 'Food',
+        monthlyAmount: parseFloat(formData.food) || 0
+      });
+    }
+    if (formData.utilities) {
+      addExpenseCategory({
+        id: 'utilities',
+        name: 'Utilities',
+        monthlyAmount: parseFloat(formData.utilities) || 0
+      });
+    }
+
     updatePlanningSettings({
       startYear: formData.startYear,
       projectionYears: formData.projectionYears
@@ -61,6 +87,8 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
       case 2:
         return formData.startingNetWorth !== '' && formData.currentStockPrice !== '';
       case 3:
+        return formData.rent !== '' || formData.food !== '';
+      case 4:
         return true;
       default:
         return false;
@@ -73,14 +101,14 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
         {/* Progress Indicator */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            {[1, 2, 3].map((s) => (
+            {[1, 2, 3, 4].map((s) => (
               <div key={s} className="flex items-center flex-1">
                 <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
                   step >= s ? 'bg-primary border-primary text-primary-foreground' : 'border-border text-muted-foreground'
                 }`}>
                   {step > s ? '✓' : s}
                 </div>
-                {s < 3 && (
+                {s < 4 && (
                   <div className={`flex-1 h-1 mx-2 ${
                     step > s ? 'bg-primary' : 'bg-border'
                   }`} />
@@ -91,6 +119,7 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>Income</span>
             <span>Investments</span>
+            <span>Expenses</span>
             <span>Review</span>
           </div>
         </div>
@@ -175,6 +204,54 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
           {step === 3 && (
             <div className="space-y-6">
               <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <Receipt className="w-8 h-8 text-primary" />
+                </div>
+                <h2 className="text-2xl font-bold mb-2">Monthly Expenses</h2>
+                <p className="text-muted-foreground">Tell us about your main expenses</p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Rent (€/month)</label>
+                  <input
+                    type="number"
+                    value={formData.rent}
+                    onChange={(e) => handleInputChange('rent', e.target.value)}
+                    placeholder="e.g., 1200"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Food (€/month)</label>
+                  <input
+                    type="number"
+                    value={formData.food}
+                    onChange={(e) => handleInputChange('food', e.target.value)}
+                    placeholder="e.g., 400"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Utilities (€/month)</label>
+                  <input
+                    type="number"
+                    value={formData.utilities}
+                    onChange={(e) => handleInputChange('utilities', e.target.value)}
+                    placeholder="e.g., 150"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Optional - you can add more later</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="space-y-6">
+              <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 mb-4">
                   <Award className="w-8 h-8 text-success" />
                 </div>
@@ -195,10 +272,35 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
                   <span className="text-muted-foreground">Starting Net Worth</span>
                   <span className="font-semibold">€{parseFloat(formData.startingNetWorth || '0').toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between py-2">
+                <div className="flex justify-between py-2 border-b border-border/50">
                   <span className="text-muted-foreground">Current Stock Price</span>
                   <span className="font-semibold">€{parseFloat(formData.currentStockPrice || '0').toLocaleString()}</span>
                 </div>
+                {(formData.rent || formData.food || formData.utilities) && (
+                  <>
+                    <div className="pt-2 border-t border-border/50">
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Monthly Expenses</p>
+                    </div>
+                    {formData.rent && (
+                      <div className="flex justify-between py-1">
+                        <span className="text-muted-foreground text-sm">Rent</span>
+                        <span className="font-semibold text-sm">€{parseFloat(formData.rent || '0').toLocaleString()}</span>
+                      </div>
+                    )}
+                    {formData.food && (
+                      <div className="flex justify-between py-1">
+                        <span className="text-muted-foreground text-sm">Food</span>
+                        <span className="font-semibold text-sm">€{parseFloat(formData.food || '0').toLocaleString()}</span>
+                      </div>
+                    )}
+                    {formData.utilities && (
+                      <div className="flex justify-between py-1">
+                        <span className="text-muted-foreground text-sm">Utilities</span>
+                        <span className="font-semibold text-sm">€{parseFloat(formData.utilities || '0').toLocaleString()}</span>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -219,8 +321,8 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
               disabled={!canProceed()}
               className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {step === 3 ? 'Get Started' : 'Next'}
-              {step < 3 && <ArrowRight className="w-4 h-4" />}
+              {step === 4 ? 'Get Started' : 'Next'}
+              {step < 4 && <ArrowRight className="w-4 h-4" />}
             </button>
           </div>
         </div>

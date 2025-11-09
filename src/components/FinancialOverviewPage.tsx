@@ -652,16 +652,16 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                 );
               }
 
-              // Assign colors - grayscale palette for visual consistency
+              // Assign colors using new palette
               const colors = [
-                'hsl(var(--foreground))',           // Main grant - darkest
-                'hsl(var(--foreground) / 0.7)',     // First refresher
-                'hsl(var(--foreground) / 0.5)',     // Second refresher
-                'hsl(var(--foreground) / 0.3)',     // Third refresher
-                'hsl(var(--muted-foreground))',     // Fourth refresher
-                'hsl(var(--muted-foreground) / 0.7)', // Fifth refresher
-                'hsl(var(--muted-foreground) / 0.5)', // Sixth refresher
-                'hsl(var(--muted-foreground) / 0.3)'  // Seventh refresher
+                'hsl(var(--primary))',              // Main grant - primary blue
+                'hsl(var(--secondary))',            // First refresher - light blue
+                'hsl(var(--accent))',               // Second refresher - very light blue
+                'hsl(var(--primary) / 0.7)',        // Third refresher
+                'hsl(var(--secondary) / 0.7)',      // Fourth refresher
+                'hsl(var(--muted))',                // Fifth refresher - muted purple
+                'hsl(var(--muted) / 0.7)',          // Sixth refresher
+                'hsl(var(--muted) / 0.5)'           // Seventh refresher
               ];
 
               // Build chart data - cumulative vesting value per grant over time
@@ -694,28 +694,31 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
               // Custom tooltip
               const CustomRSUTooltip = ({ active, payload, label }: any) => {
                 if (active && payload && payload.length) {
+                  const filteredPayload = payload.filter((entry: any) => entry.value > 0);
+                  if (filteredPayload.length === 0) return null;
+                  
                   return (
-                    <div className="bg-white border-2 border-primary rounded-xl p-4 shadow-2xl">
-                      <p className="text-sm font-bold text-primary mb-2">Year {label}</p>
-                      <div className="space-y-1">
-                        {payload.map((entry: any, index: number) => (
+                    <div className="bg-white border-2 border-primary rounded-xl p-4 shadow-2xl min-w-[200px]">
+                      <p className="text-sm font-bold text-primary mb-3">Year {label}</p>
+                      <div className="space-y-2">
+                        {filteredPayload.map((entry: any, index: number) => (
                           <div key={index} className="flex items-center justify-between gap-4">
                             <div className="flex items-center gap-2">
                               <div 
-                                className="w-3 h-3 rounded-sm" 
+                                className="w-3 h-3 rounded-full" 
                                 style={{ backgroundColor: entry.color }}
                               />
-                              <span className="text-xs text-foreground">{entry.name.replace('_', ' ')}</span>
+                              <span className="text-xs font-medium text-foreground">{entry.name.replace('_', ' ')}</span>
                             </div>
-                            <span className="text-sm font-semibold text-foreground">{formatCurrency(entry.value)}</span>
+                            <span className="text-sm font-bold text-foreground">{formatCurrency(entry.value)}</span>
                           </div>
                         ))}
                       </div>
-                      <div className="mt-2 pt-2 border-t border-border/30">
+                      <div className="mt-3 pt-3 border-t-2 border-primary/20">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Total</span>
-                          <span className="text-sm font-bold text-primary">
-                            {formatCurrency(payload.reduce((sum: number, entry: any) => sum + entry.value, 0))}
+                          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Total</span>
+                          <span className="text-base font-bold text-primary">
+                            {formatCurrency(filteredPayload.reduce((sum: number, entry: any) => sum + entry.value, 0))}
                           </span>
                         </div>
                       </div>
@@ -738,29 +741,30 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                           x2="0" 
                           y2="1"
                         >
-                          <stop offset="5%" stopColor={colors[idx % colors.length]} stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor={colors[idx % colors.length]} stopOpacity={0.05}/>
+                          <stop offset="0%" stopColor={colors[idx % colors.length]} stopOpacity={0.4}/>
+                          <stop offset="100%" stopColor={colors[idx % colors.length]} stopOpacity={0.08}/>
                         </linearGradient>
                       ))}
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.3)" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.2)" vertical={false} />
                     <XAxis 
                       dataKey="year" 
                       stroke="hsl(var(--muted-foreground))"
-                      style={{ fontSize: '13px', fontWeight: 500 }}
+                      style={{ fontSize: '13px', fontWeight: 600 }}
                       axisLine={false}
                       tickLine={false}
                     />
                     <YAxis 
                       stroke="hsl(var(--muted-foreground))"
-                      style={{ fontSize: '12px' }}
+                      style={{ fontSize: '12px', fontWeight: 500 }}
                       tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
                       axisLine={false}
                       tickLine={false}
                     />
                     <Tooltip content={<CustomRSUTooltip />} />
                     <Legend 
-                      wrapperStyle={{ paddingTop: '20px' }}
+                      wrapperStyle={{ paddingTop: '24px', fontSize: '12px' }}
+                      iconType="circle"
                       formatter={(value) => value.replace('_', ' ')}
                     />
                     {data.rsuGrants.map((grant, idx) => {
@@ -772,11 +776,11 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                           dataKey={grantKey}
                           name={`${grant.grantType} ${grant.grantYear}`}
                           stroke={colors[idx % colors.length]}
-                          strokeWidth={2.5}
+                          strokeWidth={3}
                           fill={`url(#grantGradient${idx})`}
                           fillOpacity={1}
-                          dot={{ r: 4, strokeWidth: 2, fill: 'white' }}
-                          activeDot={{ r: 6 }}
+                          dot={{ r: 5, strokeWidth: 2, stroke: colors[idx % colors.length], fill: 'white' }}
+                          activeDot={{ r: 7, strokeWidth: 3 }}
                         />
                       );
                     })}
