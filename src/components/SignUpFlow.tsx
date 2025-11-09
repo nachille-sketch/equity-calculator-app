@@ -151,12 +151,12 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
       <div className="max-w-2xl w-full">
         {/* Progress Indicator */}
         <div className="mb-8">
-          <div className="flex items-start">
+          <div className="relative flex items-start">
             {[1, 2, 3, 4, 5].map((s, index) => {
               const labels = ['Income', 'Investments', 'Expenses', 'RSU Grants', 'Review'];
               return (
                 <React.Fragment key={s}>
-                  <div className="flex flex-col items-center flex-1">
+                  <div className="flex flex-col items-center relative z-10" style={{ width: '20%' }}>
                     <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 shrink-0 ${
                       step >= s ? 'bg-primary border-primary text-primary-foreground' : 'border-border text-muted-foreground'
                     }`}>
@@ -165,9 +165,16 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
                     <span className="text-xs text-muted-foreground mt-2 text-center whitespace-nowrap">{labels[index]}</span>
                   </div>
                   {s < 5 && (
-                    <div className={`flex-1 h-1 mx-2 mt-5 ${
-                      step > s ? 'bg-primary' : 'bg-border'
-                    }`} />
+                    <div 
+                      className={`h-1 mt-5 ${
+                        step > s ? 'bg-primary' : 'bg-border'
+                      }`}
+                      style={{ 
+                        width: '15%',
+                        marginLeft: '2.5%',
+                        marginRight: '2.5%'
+                      }}
+                    />
                   )}
                 </React.Fragment>
               );
