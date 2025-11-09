@@ -15,7 +15,6 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
   const [expandedYear, setExpandedYear] = useState<number | null>(null);
   const [expandedBreakdowns, setExpandedBreakdowns] = useState<Record<number, { investments?: boolean; pension?: boolean }>>({});
   const [expandedRSUYear, setExpandedRSUYear] = useState<number | null>(null);
-  const [showRSUAssumptions, setShowRSUAssumptions] = useState(false);
   const [showGrantManagement, setShowGrantManagement] = useState(false);
   const [newGrantType, setNewGrantType] = useState<'Main' | 'Refresher' | 'Promo' | 'Retention'>('Refresher');
   const [showIncomeExpenseManagement, setShowIncomeExpenseManagement] = useState(false);
@@ -913,7 +912,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                 </div>
                 <div className="text-left">
                   <h3 className="text-lg font-semibold">Manage RSU</h3>
-                  <p className="text-xs text-muted-foreground">View, edit, and add RSU grants</p>
+                  <p className="text-xs text-muted-foreground">Manage grants and set assumptions</p>
                 </div>
               </div>
               {showGrantManagement ? (
@@ -1282,80 +1281,57 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                     </p>
                   </div>
                 </div>
-              </div>
-            )}
-          </section>
 
-          {/* RSU Assumptions Panel - Collapsible */}
-          <section className="bg-white rounded-xl border border-border/20 shadow-sm">
-            <button
-              onClick={() => setShowRSUAssumptions(!showRSUAssumptions)}
-              className="w-full px-6 py-4 flex items-center justify-between hover:bg-secondary/5 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <TrendingUp className="w-5 h-5 text-primary" />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-lg font-semibold">RSU Assumptions</h3>
-                  <p className="text-xs text-muted-foreground">Set stock price and growth assumptions</p>
-                </div>
-              </div>
-              {showRSUAssumptions ? (
-                <ChevronUp className="w-5 h-5 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-muted-foreground" />
-              )}
-            </button>
-            
-            {showRSUAssumptions && (
-              <div className="px-6 pb-6 border-t border-border/50 pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Current Stock Price */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium">Current Stock Price (USD)</label>
-                      <span className="text-sm font-semibold">${data.investmentSettings.currentStockPrice.toFixed(2)}</span>
+                {/* RSU Assumptions */}
+                <div className="pt-6 border-t border-border/50">
+                  <h4 className="text-sm font-semibold text-foreground mb-4">RSU Assumptions</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Current Stock Price */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-sm font-medium">Current Stock Price (USD)</label>
+                        <span className="text-sm font-semibold">${data.investmentSettings.currentStockPrice.toFixed(2)}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="50"
+                        max="500"
+                        step="5"
+                        value={data.investmentSettings.currentStockPrice}
+                        onChange={(e) => updateInvestmentSettings({ currentStockPrice: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${((data.investmentSettings.currentStockPrice - 50) / (500 - 50)) * 100}%, hsl(var(--secondary)) ${((data.investmentSettings.currentStockPrice - 50) / (500 - 50)) * 100}%, hsl(var(--secondary)) 100%)`
+                        }}
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <span>$50</span>
+                        <span>$500</span>
+                      </div>
                     </div>
-                    <input
-                      type="range"
-                      min="50"
-                      max="500"
-                      step="5"
-                      value={data.investmentSettings.currentStockPrice}
-                      onChange={(e) => updateInvestmentSettings({ currentStockPrice: parseFloat(e.target.value) })}
-                      className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
-                      style={{
-                        background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${((data.investmentSettings.currentStockPrice - 50) / (500 - 50)) * 100}%, hsl(var(--secondary)) ${((data.investmentSettings.currentStockPrice - 50) / (500 - 50)) * 100}%, hsl(var(--secondary)) 100%)`
-                      }}
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                      <span>$50</span>
-                      <span>$500</span>
-                    </div>
-                  </div>
 
-                  {/* Share Price Growth Rate */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium">Share Price Growth Rate</label>
-                      <span className="text-sm font-semibold">{(data.investmentSettings.sharePriceGrowthRate * 100).toFixed(1)}%</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="0.30"
-                      step="0.01"
-                      value={data.investmentSettings.sharePriceGrowthRate}
-                      onChange={(e) => updateInvestmentSettings({ sharePriceGrowthRate: parseFloat(e.target.value) })}
-                      className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
-                      style={{
-                        background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${(data.investmentSettings.sharePriceGrowthRate / 0.30) * 100}%, hsl(var(--secondary)) ${(data.investmentSettings.sharePriceGrowthRate / 0.30) * 100}%, hsl(var(--secondary)) 100%)`
-                      }}
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                      <span>0%</span>
-                      <span>30%</span>
+                    {/* Share Price Growth Rate */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-sm font-medium">Share Price Growth Rate</label>
+                        <span className="text-sm font-semibold">{(data.investmentSettings.sharePriceGrowthRate * 100).toFixed(1)}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="0.30"
+                        step="0.01"
+                        value={data.investmentSettings.sharePriceGrowthRate}
+                        onChange={(e) => updateInvestmentSettings({ sharePriceGrowthRate: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${(data.investmentSettings.sharePriceGrowthRate / 0.30) * 100}%, hsl(var(--secondary)) ${(data.investmentSettings.sharePriceGrowthRate / 0.30) * 100}%, hsl(var(--secondary)) 100%)`
+                        }}
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <span>0%</span>
+                        <span>30%</span>
+                      </div>
                     </div>
                   </div>
                 </div>
