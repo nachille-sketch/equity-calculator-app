@@ -41,42 +41,34 @@
 
 @layer base {
   :root {
-    /* Backgrounds - cream and white */
-    --background: 40 33% 91%; /* #EFECE3 - cream */
-    --foreground: 0 0% 0%; /* #000000 - black */
+    --background: 0 0% 100%; /* #FFFFFF - white */
+    --foreground: 240 89% 14%; /* #040F43 - dark blue */
 
-    /* Cards use white/cream tones */
-    --card: 0 0% 100%; /* white cards on cream background */
-    --card-foreground: 0 0% 0%; /* #000000 */
+    --card: 0 0% 100%; /* #FFFFFF - white */
+    --card-foreground: 240 89% 14%; /* #040F43 */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 240 89% 14%;
 
-    /* Primary accent - medium blue */
-    --primary: 213 40% 48%; /* #4A70A9 - medium blue */
+    --primary: 230 88% 32%; /* #0A229B - dark blue */
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary uses light blue */
-    --secondary: 213 40% 70%; /* #8FABD4 - light blue */
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 230 88% 80%; /* #A0AFF9 - light blue */
+    --secondary-foreground: 240 89% 14%;
 
-    /* Muted uses lighter versions */
-    --muted: 40 20% 85%; /* Lighter cream for muted elements */
-    --muted-foreground: 0 0% 30%; /* Dark gray */
+    --muted: 310 10% 64%; /* #AD9BAB - muted purple/gray */
+    --muted-foreground: 310 10% 40%;
 
-    /* Accent uses light blue */
-    --accent: 213 40% 70%; /* #8FABD4 - light blue */
-    --accent-foreground: 0 0% 0%;
+    --accent: 230 90% 92%; /* #DADFFD - very light blue */
+    --accent-foreground: 240 89% 14%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    /* Borders use subtle cream/gray */
-    --border: 40 15% 80%; /* Subtle cream border */
-    --input: 40 15% 80%;
-    --ring: 213 40% 48%; /* Medium blue for focus rings */
+    --border: 310 10% 88%; /* #E5DFE4 - very light purple/gray */
+    --input: 310 10% 88%;
+    --ring: 230 88% 32%; /* #0A229B - dark blue */
 
-    /* Success stays green */
     --success: 142 76% 36%;
     --success-foreground: 0 0% 98%;
 
@@ -87,27 +79,27 @@
   }
 
   .dark {
-    --background: 0 0% 10%; /* Dark background */
-    --foreground: 40 33% 91%; /* Cream text */
-    --card: 0 0% 15%;
-    --card-foreground: 40 33% 91%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 40 33% 91%;
-    --primary: 213 40% 70%; /* Light blue for dark mode */
-    --primary-foreground: 0 0% 0%;
-    --secondary: 213 40% 48%;
+    --background: 240 89% 14%; /* #040F43 - dark blue */
+    --foreground: 0 0% 100%; /* #FFFFFF - white */
+    --card: 240 89% 18%;
+    --card-foreground: 0 0% 100%;
+    --popover: 240 89% 14%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 230 88% 80%; /* #A0AFF9 - light blue */
+    --primary-foreground: 240 89% 14%;
+    --secondary: 230 88% 32%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 213 40% 70%;
-    --accent-foreground: 0 0% 0%;
+    --muted: 310 10% 40%;
+    --muted-foreground: 310 10% 70%;
+    --accent: 230 88% 80%;
+    --accent-foreground: 240 89% 14%;
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 98%;
     --success: 142 76% 36%;
     --success-foreground: 0 0% 98%;
-    --border: 0 0% 25%;
-    --input: 0 0% 25%;
-    --ring: 213 40% 70%;
+    --border: 310 10% 30%;
+    --input: 310 10% 30%;
+    --ring: 230 88% 80%;
   }
 
   * {
@@ -117,8 +109,8 @@
   body {
     background-color: hsl(var(--background));
     background-image: 
-      radial-gradient(at 20% 10%, rgba(143, 171, 212, 0.08) 0px, transparent 50%),
-      radial-gradient(at 80% 80%, rgba(143, 171, 212, 0.05) 0px, transparent 50%);
+      radial-gradient(at 20% 10%, rgba(160, 175, 249, 0.08) 0px, transparent 50%),
+      radial-gradient(at 80% 80%, rgba(218, 223, 253, 0.05) 0px, transparent 50%);
     color: hsl(var(--foreground));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
