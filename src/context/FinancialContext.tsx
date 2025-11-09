@@ -17,7 +17,7 @@ import type {
   YearlyPension
 } from '../types/financial';
 import { calculateTax } from '../utils/taxCalculations';
-import { calculateRSUVestingByYear, createDefaultRSUGrant } from '../utils/rsuCalculations';
+import { calculateRSUVestingByYear } from '../utils/rsuCalculations';
 import { 
   calculateSalaryByYear, 
   calculateFinancialProjections,
@@ -48,46 +48,36 @@ interface FinancialContextType {
 const FinancialContext = createContext<FinancialContextType | undefined>(undefined);
 
 const defaultIncomeSettings: IncomeSettings = {
-  baseSalary: 80000,
-  bonusPercentage: 0.10,
-  holidayAllowancePercentage: 0.08,
-  pensionPercentage: 0.03,
-  employerPensionPercentage: 0.08,
-  healthcareBenefitMonthly: 200,
+  baseSalary: 0,
+  bonusPercentage: 0,
+  holidayAllowancePercentage: 0,
+  pensionPercentage: 0,
+  employerPensionPercentage: 0,
+  healthcareBenefitMonthly: 0,
   has30PercentRuling: false,
-  salaryGrowthRate: 0.05
+  salaryGrowthRate: 0
 };
 
 const defaultInvestmentSettings: InvestmentSettings = {
-  startingNetWorth: 50000,
+  startingNetWorth: 0,
   startingPensionBalance: 0,
-  annualReturnRate: 0.10,
-  pensionReturnRate: 0.07,
-  sharePriceGrowthRate: 0.05,
-  currentStockPrice: 100,
-  bonusInvestmentPercentage: 1.0,
-  holidayAllowanceInvestmentPercentage: 1.0
+  annualReturnRate: 0,
+  pensionReturnRate: 0,
+  sharePriceGrowthRate: 0,
+  currentStockPrice: 0,
+  bonusInvestmentPercentage: 0,
+  holidayAllowanceInvestmentPercentage: 0
 };
 
 const defaultPlanningSettings: PlanningSettings = {
   startYear: 2025,
   projectionYears: 6,
-  expenseInflationRate: 0.02
+  expenseInflationRate: 0
 };
 
-const defaultExpenseCategories: ExpenseCategory[] = [
-  { id: 'rent', name: 'Rent', monthlyAmount: 1200 },
-  { id: 'utilities', name: 'Utilities', monthlyAmount: 150 },
-  { id: 'food', name: 'Food', monthlyAmount: 400 },
-  { id: 'holiday', name: 'Holiday', monthlyAmount: 200 },
-  { id: 'clothing', name: 'Clothing', monthlyAmount: 150 },
-  { id: 'family', name: 'Helping family', monthlyAmount: 300 },
-  { id: 'fun', name: 'Fun / entertainment', monthlyAmount: 400 }
-];
+const defaultExpenseCategories: ExpenseCategory[] = [];
 
-const defaultRSUGrants: RSUGrant[] = [
-  createDefaultRSUGrant(2024)
-];
+const defaultRSUGrants: RSUGrant[] = [];
 
 // Provider component
 export const FinancialProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
