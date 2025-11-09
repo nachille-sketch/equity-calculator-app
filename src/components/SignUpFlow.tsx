@@ -12,6 +12,12 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
   const [formData, setFormData] = useState({
     baseSalary: '',
     has30PercentRuling: false,
+    holidayAllowancePercentage: '',
+    bonusPercentage: '',
+    salaryGrowthRate: '',
+    pensionPercentage: '',
+    employerPensionPercentage: '',
+    healthcareBenefitMonthly: '',
     startingNetWorth: '',
     currentStockPrice: '',
     rent: '',
@@ -38,7 +44,13 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
     if (formData.baseSalary) {
       updateIncomeSettings({
         baseSalary: parseFloat(formData.baseSalary) || 0,
-        has30PercentRuling: formData.has30PercentRuling
+        has30PercentRuling: formData.has30PercentRuling,
+        holidayAllowancePercentage: parseFloat(formData.holidayAllowancePercentage) / 100 || 0,
+        bonusPercentage: parseFloat(formData.bonusPercentage) / 100 || 0,
+        salaryGrowthRate: parseFloat(formData.salaryGrowthRate) / 100 || 0,
+        pensionPercentage: parseFloat(formData.pensionPercentage) / 100 || 0,
+        employerPensionPercentage: parseFloat(formData.employerPensionPercentage) / 100 || 0,
+        healthcareBenefitMonthly: parseFloat(formData.healthcareBenefitMonthly) || 0
       });
     }
     
@@ -132,13 +144,13 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
                   <DollarSign className="w-8 h-8 text-primary" />
                 </div>
-                <h2 className="text-2xl font-bold mb-2">Set Up Your Income</h2>
-                <p className="text-muted-foreground">Let's start with your base salary</p>
+                <h2 className="text-2xl font-bold mb-2">Salary & Compensation</h2>
+                <p className="text-muted-foreground">Your base salary and standard Dutch compensation components</p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Annual Base Salary (€)</label>
+                  <label className="block text-sm font-medium mb-2">Base Salary (Annual) (€)</label>
                   <input
                     type="number"
                     value={formData.baseSalary}
@@ -146,19 +158,123 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
                     placeholder="e.g., 80000"
                     className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   />
+                  <p className="text-xs text-muted-foreground mt-1">Your yearly gross salary</p>
                 </div>
 
-                <div className="flex items-center gap-3 p-4 border border-border rounded-lg">
-                  <input
-                    type="checkbox"
-                    id="30ruling"
-                    checked={formData.has30PercentRuling}
-                    onChange={(e) => handleInputChange('has30PercentRuling', e.target.checked)}
-                    className="w-5 h-5 text-primary rounded"
-                  />
-                  <label htmlFor="30ruling" className="text-sm cursor-pointer">
-                    I have 30% ruling
-                  </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Holiday Allowance (%)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={formData.holidayAllowancePercentage}
+                        onChange={(e) => handleInputChange('holidayAllowancePercentage', e.target.value)}
+                        placeholder="0.0"
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-8"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Paid once yearly</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Bonus Percentage (%)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={formData.bonusPercentage}
+                        onChange={(e) => handleInputChange('bonusPercentage', e.target.value)}
+                        placeholder="0.0"
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-8"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Annual bonus</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Salary Growth Rate (%)</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={formData.salaryGrowthRate}
+                      onChange={(e) => handleInputChange('salaryGrowthRate', e.target.value)}
+                      placeholder="0.0"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-8"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">Expected annual raise</p>
+                </div>
+
+                <div className="pt-4 border-t border-border/50">
+                  <h3 className="text-sm font-semibold mb-4">Pension & Benefits</h3>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Your Pension Contribution (%)</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={formData.pensionPercentage}
+                          onChange={(e) => handleInputChange('pensionPercentage', e.target.value)}
+                          placeholder="0.00"
+                          className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-8"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">Deducted from gross salary</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Employer Pension (%)</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={formData.employerPensionPercentage}
+                          onChange={(e) => handleInputChange('employerPensionPercentage', e.target.value)}
+                          placeholder="0.0"
+                          className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-8"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">Company's contribution</p>
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">Healthcare Benefit (Monthly) (€)</label>
+                    <input
+                      type="number"
+                      value={formData.healthcareBenefitMonthly}
+                      onChange={(e) => handleInputChange('healthcareBenefitMonthly', e.target.value)}
+                      placeholder="e.g., 200"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Tax-free healthcare perk</p>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-4 border border-border rounded-lg">
+                    <input
+                      type="checkbox"
+                      id="30ruling"
+                      checked={formData.has30PercentRuling}
+                      onChange={(e) => handleInputChange('has30PercentRuling', e.target.checked)}
+                      className="w-5 h-5 text-primary rounded"
+                    />
+                    <div>
+                      <label htmlFor="30ruling" className="text-sm font-medium cursor-pointer block">
+                        30% Ruling
+                      </label>
+                      <p className="text-xs text-muted-foreground">Only 70% taxable</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -260,19 +376,64 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
               </div>
 
               <div className="space-y-4 bg-muted/30 rounded-lg p-6">
-                <div className="flex justify-between py-2 border-b border-border/50">
+                <div className="pb-2 border-b border-border/50">
+                  <p className="text-sm font-semibold text-foreground mb-3">Salary & Compensation</p>
+                </div>
+                <div className="flex justify-between py-2">
                   <span className="text-muted-foreground">Base Salary</span>
                   <span className="font-semibold">€{parseFloat(formData.baseSalary || '0').toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-border/50">
+                {formData.holidayAllowancePercentage && (
+                  <div className="flex justify-between py-2">
+                    <span className="text-muted-foreground">Holiday Allowance</span>
+                    <span className="font-semibold">{parseFloat(formData.holidayAllowancePercentage || '0').toFixed(1)}%</span>
+                  </div>
+                )}
+                {formData.bonusPercentage && (
+                  <div className="flex justify-between py-2">
+                    <span className="text-muted-foreground">Bonus</span>
+                    <span className="font-semibold">{parseFloat(formData.bonusPercentage || '0').toFixed(1)}%</span>
+                  </div>
+                )}
+                {formData.salaryGrowthRate && (
+                  <div className="flex justify-between py-2">
+                    <span className="text-muted-foreground">Salary Growth</span>
+                    <span className="font-semibold">{parseFloat(formData.salaryGrowthRate || '0').toFixed(1)}%</span>
+                  </div>
+                )}
+                <div className="pt-2 border-t border-border/50">
+                  <p className="text-sm font-semibold text-foreground mb-3">Pension & Benefits</p>
+                </div>
+                {formData.pensionPercentage && (
+                  <div className="flex justify-between py-2">
+                    <span className="text-muted-foreground">Pension Contribution</span>
+                    <span className="font-semibold">{parseFloat(formData.pensionPercentage || '0').toFixed(2)}%</span>
+                  </div>
+                )}
+                {formData.employerPensionPercentage && (
+                  <div className="flex justify-between py-2">
+                    <span className="text-muted-foreground">Employer Pension</span>
+                    <span className="font-semibold">{parseFloat(formData.employerPensionPercentage || '0').toFixed(1)}%</span>
+                  </div>
+                )}
+                {formData.healthcareBenefitMonthly && (
+                  <div className="flex justify-between py-2">
+                    <span className="text-muted-foreground">Healthcare Benefit</span>
+                    <span className="font-semibold">€{parseFloat(formData.healthcareBenefitMonthly || '0').toLocaleString()}/month</span>
+                  </div>
+                )}
+                <div className="flex justify-between py-2">
                   <span className="text-muted-foreground">30% Ruling</span>
                   <span className="font-semibold">{formData.has30PercentRuling ? 'Yes' : 'No'}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-border/50">
+                <div className="pt-2 border-t border-border/50">
+                  <p className="text-sm font-semibold text-foreground mb-3">Investments</p>
+                </div>
+                <div className="flex justify-between py-2">
                   <span className="text-muted-foreground">Starting Net Worth</span>
                   <span className="font-semibold">€{parseFloat(formData.startingNetWorth || '0').toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-border/50">
+                <div className="flex justify-between py-2">
                   <span className="text-muted-foreground">Current Stock Price</span>
                   <span className="font-semibold">€{parseFloat(formData.currentStockPrice || '0').toLocaleString()}</span>
                 </div>
