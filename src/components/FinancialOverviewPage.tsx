@@ -902,20 +902,29 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
           </section>
 
           {/* All RSU Grants Management - Unified Panel */}
-          <section className="bg-card border border-border/50 rounded-lg shadow-card overflow-hidden">
+          <section className="bg-white rounded-xl border border-border/20 shadow-sm">
             <button
               onClick={() => setShowGrantManagement(!showGrantManagement)}
-              className="w-full px-6 py-4 flex items-center justify-between hover:bg-secondary/10 transition-colors"
+              className="w-full px-6 py-4 flex items-center justify-between hover:bg-secondary/5 transition-colors"
             >
-              <div>
-                <h3 className="text-lg font-semibold">All RSU Grants</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">View, edit, and add grants</p>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Award className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold">Manage RSU</h3>
+                  <p className="text-xs text-muted-foreground">View, edit, and add RSU grants</p>
+                </div>
               </div>
-              <span className={`transition-transform duration-200 ${showGrantManagement ? 'rotate-90' : ''}`}>▶</span>
+              {showGrantManagement ? (
+                <ChevronUp className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-muted-foreground" />
+              )}
             </button>
 
             {showGrantManagement && (
-              <div className="px-4 pb-4 space-y-2">
+              <div className="px-6 pb-6 border-t border-border/50 pt-6 space-y-2">
                 {/* Current Grants List */}
                 <div className="space-y-1.5">
                   <h4 className="font-medium text-xs text-muted-foreground mb-2">Current Grants ({data.rsuGrants.length})</h4>
