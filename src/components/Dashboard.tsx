@@ -22,7 +22,7 @@ export const Dashboard: React.FC = () => {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-card border-2 border-primary rounded-xl p-4 shadow-2xl">
+        <div className="bg-white border-2 border-primary rounded-xl p-4 shadow-2xl">
           <p className="text-sm font-bold text-primary mb-2">Year {label}</p>
           <div className="space-y-1">
             {payload.map((entry: any, index: number) => (
@@ -98,7 +98,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Collapsible Assumptions Panel - Clean & Minimal */}
       {showAssumptions && (
-        <section className="p-8 bg-white dark:bg-card border border-border/30 rounded-2xl shadow-sm space-y-8 animate-slideDown">
+        <section className="p-8 bg-white border border-border/30 rounded-2xl shadow-sm space-y-8 animate-slideDown">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Zap className="w-5 h-5 text-primary" />
@@ -239,7 +239,7 @@ export const Dashboard: React.FC = () => {
                   onClick={() => updateIncomeSettings({ has30PercentRuling: false })}
                   className={`flex-1 px-6 py-2.5 text-sm font-semibold rounded-md transition-all duration-200 ${
                     !data.incomeSettings.has30PercentRuling
-                      ? 'bg-white dark:bg-card shadow-md border-2 border-border text-foreground'
+                      ? 'bg-white shadow-md border-2 border-border text-foreground'
                       : 'text-muted-foreground hover:text-foreground hover:bg-white/50'
                   }`}
                 >
@@ -299,7 +299,7 @@ export const Dashboard: React.FC = () => {
       )}
 
       {/* Hero Balance Card - Clean, Professional Design */}
-      <section className="relative p-12 bg-white dark:bg-card border border-border/30 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+      <section className="relative p-12 bg-white border border-border/30 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
         {/* Subtle gradient accent */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-accent/3 pointer-events-none" />
         
@@ -354,7 +354,7 @@ export const Dashboard: React.FC = () => {
       </section>
 
       {/* Net Worth Chart - Enhanced with icons */}
-      <section className="bg-white dark:bg-secondary/5 rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <section className="bg-white rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">

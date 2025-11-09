@@ -19,6 +19,13 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
   const [showGrantManagement, setShowGrantManagement] = useState(false);
   const [newGrantType, setNewGrantType] = useState<'Main' | 'Refresher' | 'Promo' | 'Retention'>('Refresher');
   
+  // Auto-expand grant management when there are no grants
+  useEffect(() => {
+    if (data.rsuGrants.length === 0 && activeView === 'rsus') {
+      setShowGrantManagement(true);
+    }
+  }, [data.rsuGrants.length, activeView]);
+  
   // Auto-calculate suggested year based on existing grants
   const getNextGrantYear = (grantType: string) => {
     const sortedGrants = [...data.rsuGrants].sort((a, b) => b.grantYear - a.grantYear);
@@ -95,7 +102,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Hero Section - Today's Wealth (Clean, Professional) */}
-      <section className="relative p-12 bg-white dark:bg-card border border-border/30 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+      <section className="relative p-12 bg-white border border-border/30 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
         {/* Subtle gradient accent */}
         <div className="absolute inset-0 bg-gradient-to-br from-success/3 via-transparent to-primary/3 pointer-events-none" />
         
@@ -202,7 +209,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
       {activeView === 'financials' && (
         <div className="space-y-6">
           {/* Income & Savings Visualization - Enhanced Multi-Line */}
-          <section className="bg-white dark:bg-secondary/5 rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <section className="bg-white rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-success/10 rounded-lg">
                 <TrendingUp className="w-5 h-5 text-success" />
@@ -601,7 +608,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
       {activeView === 'rsus' && (
         <div className="space-y-8">
           {/* Vesting Schedule Visualization - Enhanced */}
-          <section className="bg-white dark:bg-secondary/5 rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <section className="bg-white rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-accent/30 rounded-lg">
                 <Award className="w-5 h-5 text-primary" />
@@ -619,8 +626,16 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
               
               if (data.rsuGrants.length === 0) {
                 return (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <p>No RSU grants to display. Add grants below to see vesting schedule.</p>
+                  <div className="text-center py-16">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 mb-4">
+                      <Award className="w-8 h-8 text-primary" />
+                    </div>
+                    <h4 className="text-lg font-semibold text-foreground mb-2">No RSU Grants Yet</h4>
+                    <p className="text-muted-foreground mb-6">Add your RSU grants below to visualize your vesting schedule.</p>
+                    <div className="inline-flex items-center gap-2 text-sm text-primary font-medium">
+                      <span>↓</span>
+                      <span>Scroll down to add grants</span>
+                    </div>
                   </div>
                 );
               }
@@ -1408,7 +1423,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
       {activeView === 'investments' && (
         <div className="space-y-8">
           {/* Wealth Growth Visualization - Enhanced */}
-          <section className="bg-white dark:bg-secondary/5 rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <section className="bg-white rounded-xl p-8 border border-border/20 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-primary/10 rounded-lg">
                 <PiggyBank className="w-5 h-5 text-primary" />
