@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #000;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #000;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  input[type="range"]::-webkit-slider-thumb:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  input[type="range"]::-moz-range-thumb:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@layer base {
+  :root {
+    /* Backgrounds - cream and white */
+    --background: 40 33% 91%; /* #EFECE3 - cream */
+    --foreground: 0 0% 0%; /* #000000 - black */
+
+    /* Cards use white/cream tones */
+    --card: 0 0% 100%; /* white cards on cream background */
+    --card-foreground: 0 0% 0%; /* #000000 */
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+
+    /* Primary accent - medium blue */
+    --primary: 213 40% 48%; /* #4A70A9 - medium blue */
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary uses light blue */
+    --secondary: 213 40% 70%; /* #8FABD4 - light blue */
+    --secondary-foreground: 0 0% 0%;
+
+    /* Muted uses lighter versions */
+    --muted: 40 20% 85%; /* Lighter cream for muted elements */
+    --muted-foreground: 0 0% 30%; /* Dark gray */
+
+    /* Accent uses light blue */
+    --accent: 213 40% 70%; /* #8FABD4 - light blue */
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Borders use subtle cream/gray */
+    --border: 40 15% 80%; /* Subtle cream border */
+    --input: 40 15% 80%;
+    --ring: 213 40% 48%; /* Medium blue for focus rings */
+
+    /* Success stays green */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 0 0% 10%; /* Dark background */
+    --foreground: 40 33% 91%; /* Cream text */
+    --card: 0 0% 15%;
+    --card-foreground: 40 33% 91%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 40 33% 91%;
+    --primary: 213 40% 70%; /* Light blue for dark mode */
+    --primary-foreground: 0 0% 0%;
+    --secondary: 213 40% 48%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 213 40% 70%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    --border: 0 0% 25%;
+    --input: 0 0% 25%;
+    --ring: 213 40% 70%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    background-image: 
+      radial-gradient(at 20% 10%, rgba(143, 171, 212, 0.08) 0px, transparent 50%),
+      radial-gradient(at 80% 80%, rgba(143, 171, 212, 0.05) 0px, transparent 50%);
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .animate-slideDown {
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .animate-slideInFromRight {
+    animation: slideInFromRight 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform, opacity;
+  }
+
+  .animate-slideInFromLeft {
+    animation: slideInFromLeft 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform, opacity;
+  }
+
+  .shadow-card {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.03);
+  }
+  
+  .shadow-elevated {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInFromRight {
+    0% {
+      transform: translateX(30px) scale(0.98);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInFromLeft {
+    0% {
+      transform: translateX(-30px) scale(0.98);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+  }
+}
+
