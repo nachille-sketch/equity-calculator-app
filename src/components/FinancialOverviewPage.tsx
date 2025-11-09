@@ -924,15 +924,15 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
             </button>
 
             {showGrantManagement && (
-              <div className="px-6 pb-6 border-t border-border/50 pt-6 space-y-2">
+              <div className="px-6 pb-6 border-t border-border/50 pt-6 space-y-6">
                 {/* Current Grants List */}
-                <div className="space-y-1.5">
-                  <h4 className="font-medium text-xs text-muted-foreground mb-2">Current Grants ({data.rsuGrants.length})</h4>
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-foreground">Current Grants ({data.rsuGrants.length})</h4>
                   {data.rsuGrants.map((grant, idx) => (
-                    <div key={grant.id} className="p-2 bg-secondary/10 rounded border border-border/30">
-                      <div className="grid grid-cols-7 gap-2 items-end">
+                    <div key={grant.id} className="p-4 bg-secondary/5 rounded-lg border border-border/20">
+                      <div className="grid grid-cols-7 gap-3 items-end">
                         <div>
-                          <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-0.5">Type</label>
+                          <label className="text-xs text-muted-foreground block mb-1.5">Type</label>
                           <select
                             value={grant.grantType}
                             onChange={(e) => {
@@ -940,7 +940,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                               updated[idx] = { ...grant, grantType: e.target.value };
                               updateRSUGrants(updated);
                             }}
-                            className="w-full px-1.5 py-1 bg-background border border-border rounded text-xs"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
                           >
                             <option value="Main">Main</option>
                             <option value="Refresher">Refresher</option>
@@ -949,7 +949,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                           </select>
                         </div>
                         <div>
-                          <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-0.5">Year</label>
+                          <label className="text-xs text-muted-foreground block mb-1.5">Year</label>
                           <input
                             type="number"
                             value={grant.grantYear}
@@ -966,11 +966,11 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                               };
                               updateRSUGrants(updated);
                             }}
-                            className="w-full px-1.5 py-1 bg-background border border-border rounded text-xs"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
                           />
                         </div>
                         <div>
-                          <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-0.5">Value €</label>
+                          <label className="text-xs text-muted-foreground block mb-1.5">Value €</label>
                           <input
                             type="number"
                             value={grant.grantValueEur}
@@ -984,11 +984,11 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                               };
                               updateRSUGrants(updated);
                             }}
-                            className="w-full px-1.5 py-1 bg-background border border-border rounded text-xs"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
                           />
                         </div>
                         <div>
-                          <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-0.5">Price €</label>
+                          <label className="text-xs text-muted-foreground block mb-1.5">Price €</label>
                           <input
                             type="number"
                             step="0.01"
@@ -1003,17 +1003,17 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                               };
                               updateRSUGrants(updated);
                             }}
-                            className="w-full px-1.5 py-1 bg-background border border-border rounded text-xs"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
                           />
                         </div>
                         <div>
-                          <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-0.5">Shares</label>
-                          <div className="px-1.5 py-1 bg-secondary/30 rounded text-xs font-medium">
+                          <label className="text-xs text-muted-foreground block mb-1.5">Shares</label>
+                          <div className="px-3 py-2 bg-secondary/20 rounded-lg text-sm font-medium">
                             {grant.grantShares.toFixed(1)}
                           </div>
                         </div>
                         <div>
-                          <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-0.5">Vesting</label>
+                          <label className="text-xs text-muted-foreground block mb-1.5">Vesting</label>
                           <input
                             type="number"
                             value={grant.vestingYears}
@@ -1027,7 +1027,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                               };
                               updateRSUGrants(updated);
                             }}
-                            className="w-full px-1.5 py-1 bg-background border border-border rounded text-xs"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
                           />
                         </div>
                         <div>
@@ -1036,7 +1036,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                               const updated = data.rsuGrants.filter((_, i) => i !== idx);
                               updateRSUGrants(updated);
                             }}
-                            className="w-full px-2 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded text-[10px] font-medium transition-colors"
+                            className="w-full px-3 py-2 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg text-sm font-medium transition-colors"
                           >
                             Remove
                           </button>
@@ -1047,8 +1047,8 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                 </div>
 
                 {/* Quick Add with Presets */}
-                <div className="pt-4 border-t border-border/50 space-y-4">
-                  <h4 className="font-medium text-sm text-muted-foreground">Quick Add New Grant</h4>
+                <div className="pt-6 border-t border-border/50 space-y-4">
+                  <h4 className="text-sm font-semibold text-foreground">Quick Add New Grant</h4>
                   
                   {/* Grant Type & Year Selection */}
                   <div className="grid grid-cols-2 gap-4">
@@ -1271,9 +1271,9 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                     </button>
                   </div>
                   
-                  <div className="p-3 bg-secondary/20 rounded-lg border border-border/30">
-                    <p className="text-xs text-muted-foreground">
-                      <strong>How grant values are calculated:</strong><br/>
+                  <div className="p-4 bg-secondary/5 rounded-lg border border-border/20">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      <strong className="text-foreground">How grant values are calculated:</strong><br/>
                       • <strong>Refreshers (before promo):</strong> 25% of your main grant<br/>
                       • <strong>Promotions:</strong> 60% more than your current refreshers<br/>
                       • <strong>Refreshers (after promo):</strong> 60% more than your old refreshers (same as the promo multiplier!)<br/>
@@ -1287,17 +1287,29 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
           </section>
 
           {/* RSU Assumptions Panel - Collapsible */}
-          <section className="bg-card border border-border/50 rounded-lg shadow-card overflow-hidden">
+          <section className="bg-white rounded-xl border border-border/20 shadow-sm">
             <button
               onClick={() => setShowRSUAssumptions(!showRSUAssumptions)}
-              className="w-full px-6 py-4 flex items-center justify-between hover:bg-secondary/10 transition-colors"
+              className="w-full px-6 py-4 flex items-center justify-between hover:bg-secondary/5 transition-colors"
             >
-              <h3 className="text-lg font-semibold">RSU Assumptions</h3>
-              <span className={`transition-transform duration-200 ${showRSUAssumptions ? 'rotate-90' : ''}`}>▶</span>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold">RSU Assumptions</h3>
+                  <p className="text-xs text-muted-foreground">Set stock price and growth assumptions</p>
+                </div>
+              </div>
+              {showRSUAssumptions ? (
+                <ChevronUp className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-muted-foreground" />
+              )}
             </button>
             
             {showRSUAssumptions && (
-              <div className="px-6 pb-6 pt-2">
+              <div className="px-6 pb-6 border-t border-border/50 pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Current Stock Price */}
                   <div>
