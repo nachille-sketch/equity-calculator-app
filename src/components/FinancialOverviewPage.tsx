@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useFinancial } from '../context/FinancialContext';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid, LineChart, Line, Legend } from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid, Line, Legend } from 'recharts';
 import type { RSUGrant } from '../types/financial';
 import { TrendingUp, DollarSign, PiggyBank, Target, Award } from 'lucide-react';
 
@@ -640,6 +640,18 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                 );
               }
 
+              if (data.investmentSettings.currentStockPrice === 0) {
+                return (
+                  <div className="text-center py-16">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 mb-4">
+                      <Award className="w-8 h-8 text-primary" />
+                    </div>
+                    <h4 className="text-lg font-semibold text-foreground mb-2">Stock Price Not Set</h4>
+                    <p className="text-muted-foreground mb-6">Please set the current stock price in RSU Assumptions to view the vesting schedule.</p>
+                  </div>
+                );
+              }
+
               // Assign colors - grayscale palette for visual consistency
               const colors = [
                 'hsl(var(--foreground))',           // Main grant - darkest
@@ -715,7 +727,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
 
               return (
                 <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={chartData}>
+                  <AreaChart data={chartData}>
                     <defs>
                       {data.rsuGrants.map((_, idx) => (
                         <linearGradient 
@@ -768,7 +780,7 @@ export const FinancialOverviewPage: React.FC<FinancialOverviewPageProps> = ({ in
                         />
                       );
                     })}
-                  </LineChart>
+                  </AreaChart>
                 </ResponsiveContainer>
               );
             })()}

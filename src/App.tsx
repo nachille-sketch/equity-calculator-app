@@ -1,15 +1,30 @@
 import { useState, useEffect } from 'react';
-import { FinancialProvider } from './context/FinancialContext';
+import { FinancialProvider, useFinancial } from './context/FinancialContext';
 import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
 import { InputsForm } from './components/InputsForm';
 import { FinancialOverviewPage } from './components/FinancialOverviewPage';
+import { SignUpFlow } from './components/SignUpFlow';
 
-function App() {
+function AppContent() {
+  const { data } = useFinancial();
+  const [showSignUp, setShowSignUp] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [previousTab, setPreviousTab] = useState('dashboard');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [financialOverviewView, setFinancialOverviewView] = useState<'financials' | 'rsus' | 'investments'>('financials');
+
+  // Check if user needs to complete sign-up
+  useEffect(() => {
+    const hasCompletedSetup = localStorage.getItem('setupCompleted') === 'true' || 
+                              (data.incomeSettings.baseSalary > 0 && data.investmentSettings.startingNetWorth >= 0);
+    setShowSignUp(!hasCompletedSetup);
+  }, [data.incomeSettings.baseSalary, data.investmentSettings.startingNetWorth]);
+
+  const handleSignUpComplete = () => {
+    localStorage.setItem('setupCompleted', 'true');
+    setShowSignUp(false);
+  };
 
   // Tab order for determining slide direction
   const tabOrder = ['dashboard', 'financial-overview', 'inputs'];
@@ -69,11 +84,21 @@ function App() {
     );
   };
 
+  if (showSignUp) {
+    return <SignUpFlow onComplete={handleSignUpComplete} />;
+  }
+
+  return (
+    <Layout activeTab={activeTab} onTabChange={handleTabChange}>
+      {renderContent()}
+    </Layout>
+  );
+}
+
+function App() {
   return (
     <FinancialProvider>
-      <Layout activeTab={activeTab} onTabChange={handleTabChange}>
-        {renderContent()}
-      </Layout>
+      <AppContent />
     </FinancialProvider>
   );
 }
