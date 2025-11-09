@@ -26,6 +26,8 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
     rsuGrantYear: new Date().getFullYear().toString(),
     rsuGrantValue: '',
     rsuGrantType: 'Main' as 'Main' | 'Refresher' | 'Promo' | 'Retention',
+    rsuVestingYears: '4',
+    rsuVestingType: 'Equal Annual' as 'Equal Annual' | 'Cliff' | 'Custom',
     startYear: new Date().getFullYear(),
     projectionYears: 6
   });
@@ -92,6 +94,18 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
       const grantYear = parseInt(formData.rsuGrantYear) || new Date().getFullYear();
       const grantValue = parseFloat(formData.rsuGrantValue) || 0;
       const sharePrice = parseFloat(formData.currentStockPrice) || 0;
+      const vestingYears = parseInt(formData.rsuVestingYears) || 4;
+      
+      // Calculate vesting percentage per year based on vesting type
+      let vestingPercentagePerYear = 0.25; // Default: equal annual
+      if (formData.rsuVestingType === 'Equal Annual') {
+        vestingPercentagePerYear = 1 / vestingYears;
+      } else if (formData.rsuVestingType === 'Cliff') {
+        vestingPercentagePerYear = 0; // Will vest 100% at the end
+      } else {
+        // Custom: default to equal annual for now
+        vestingPercentagePerYear = 1 / vestingYears;
+      }
       
       if (grantValue > 0 && sharePrice > 0) {
         addRSUGrant({
@@ -101,8 +115,8 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
           grantValueEur: grantValue,
           sharePriceEur: sharePrice,
           grantShares: grantValue / sharePrice,
-          vestingYears: 4,
-          vestingPercentagePerYear: 0.25
+          vestingYears,
+          vestingPercentagePerYear: formData.rsuVestingType === 'Cliff' ? 0 : vestingPercentagePerYear
         });
       }
     }
@@ -441,6 +455,46 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
                   <p className="text-xs text-muted-foreground mt-1">Total value of the grant</p>
                 </div>
 
+                <div className="pt-4 border-t border-border/50">
+                  <h3 className="text-sm font-semibold mb-4">Vesting Schedule</h3>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Vesting Years</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={formData.rsuVestingYears}
+                        onChange={(e) => handleInputChange('rsuVestingYears', e.target.value)}
+                        placeholder="4"
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Total vesting period</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Vesting Type</label>
+                      <select
+                        value={formData.rsuVestingType}
+                        onChange={(e) => handleInputChange('rsuVestingType', e.target.value)}
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      >
+                        <option value="Equal Annual">Equal Annual</option>
+                        <option value="Cliff">Cliff (all at end)</option>
+                        <option value="Custom">Custom</option>
+                      </select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formData.rsuVestingType === 'Equal Annual' 
+                          ? `${Math.round(100 / parseFloat(formData.rsuVestingYears || '4'))}% per year`
+                          : formData.rsuVestingType === 'Cliff'
+                          ? '100% after vesting period'
+                          : 'Specify custom schedule'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {!formData.currentStockPrice && (
                   <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg">
                     <p className="text-sm text-warning-foreground">
@@ -565,6 +619,14 @@ export const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete }) => {
                     <div className="flex justify-between py-2">
                       <span className="text-muted-foreground">Grant Value</span>
                       <span className="font-semibold">€{parseFloat(formData.rsuGrantValue || '0').toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between py-2">
+                      <span className="text-muted-foreground">Vesting Years</span>
+                      <span className="font-semibold">{formData.rsuVestingYears} years</span>
+                    </div>
+                    <div className="flex justify-between py-2">
+                      <span className="text-muted-foreground">Vesting Type</span>
+                      <span className="font-semibold">{formData.rsuVestingType}</span>
                     </div>
                   </>
                 )}
