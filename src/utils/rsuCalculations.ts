@@ -152,8 +152,8 @@ export function calculateRSUVestingByYear(
  * Create a default RSU grant (main grant from 2024)
  */
 export function createDefaultRSUGrant(grantYear: number = 2024): RSUGrant {
-  const grantValueEur = 160000;
-  const sharePriceEur = 150;
+  const grantValueEur = 100000;
+  const sharePriceEur = 100;
   
   return {
     id: `grant-${grantYear}-main`,

@@ -47,27 +47,26 @@ interface FinancialContextType {
 // Create context
 const FinancialContext = createContext<FinancialContextType | undefined>(undefined);
 
-// Default values based on actual Databricks payslip
 const defaultIncomeSettings: IncomeSettings = {
-  baseSalary: 78500, // €6,541.66/month × 12 from payslip
-  bonusPercentage: 0.10, // 10% annual bonus (paid separately, not monthly)
-  holidayAllowancePercentage: 0.08, // 8% holiday allowance (paid once per year, typically May/June)
-  pensionPercentage: 0.0338, // 3.38% from payslip (€221.02 / €6,541.66)
-  employerPensionPercentage: 0.08, // Employer contribution
-  healthcareBenefitMonthly: 200, // Healthcare benefit (tax-free)
-  has30PercentRuling: true,
+  baseSalary: 80000,
+  bonusPercentage: 0.10,
+  holidayAllowancePercentage: 0.08,
+  pensionPercentage: 0.03,
+  employerPensionPercentage: 0.08,
+  healthcareBenefitMonthly: 200,
+  has30PercentRuling: false,
   salaryGrowthRate: 0.05
 };
 
 const defaultInvestmentSettings: InvestmentSettings = {
-  startingNetWorth: 71000,
-  startingPensionBalance: 0, // Starting pension balance
+  startingNetWorth: 50000,
+  startingPensionBalance: 0,
   annualReturnRate: 0.10,
-  pensionReturnRate: 0.07, // Conservative pension fund return
-  sharePriceGrowthRate: 0.05, // 5% annual stock price growth
-  currentStockPrice: 150, // Current stock price for reference
-  bonusInvestmentPercentage: 1.0, // 100% of bonus invested by default
-  holidayAllowanceInvestmentPercentage: 1.0 // 100% of holiday allowance invested by default
+  pensionReturnRate: 0.07,
+  sharePriceGrowthRate: 0.05,
+  currentStockPrice: 100,
+  bonusInvestmentPercentage: 1.0,
+  holidayAllowanceInvestmentPercentage: 1.0
 };
 
 const defaultPlanningSettings: PlanningSettings = {
@@ -77,13 +76,13 @@ const defaultPlanningSettings: PlanningSettings = {
 };
 
 const defaultExpenseCategories: ExpenseCategory[] = [
-  { id: 'rent', name: 'Rent', monthlyAmount: 1450 },
+  { id: 'rent', name: 'Rent', monthlyAmount: 1200 },
   { id: 'utilities', name: 'Utilities', monthlyAmount: 150 },
-  { id: 'food', name: 'Food', monthlyAmount: 500 },
+  { id: 'food', name: 'Food', monthlyAmount: 400 },
   { id: 'holiday', name: 'Holiday', monthlyAmount: 200 },
-  { id: 'clothing', name: 'Clothing', monthlyAmount: 200 },
-  { id: 'family', name: 'Helping family', monthlyAmount: 400 },
-  { id: 'fun', name: 'Fun / entertainment', monthlyAmount: 500 }
+  { id: 'clothing', name: 'Clothing', monthlyAmount: 150 },
+  { id: 'family', name: 'Helping family', monthlyAmount: 300 },
+  { id: 'fun', name: 'Fun / entertainment', monthlyAmount: 400 }
 ];
 
 const defaultRSUGrants: RSUGrant[] = [
